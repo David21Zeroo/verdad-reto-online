@@ -48,12 +48,11 @@ backdrop-filter:blur(10px);
 }
 
 button{
-padding:12px;
-margin:8px;
+padding:10px;
+margin:6px;
 border:none;
-border-radius:10px;
+border-radius:8px;
 cursor:pointer;
-font-size:16px;
 font-weight:bold;
 }
 
@@ -62,24 +61,29 @@ font-weight:bold;
 .blue{background:#2979ff;color:white;}
 
 input{
-padding:10px;
+padding:8px;
 margin:5px;
-border-radius:8px;
+border-radius:6px;
 border:none;
 width:80%;
 }
 
 #challengeBox{
-margin-top:20px;
-padding:15px;
-border-radius:15px;
+margin-top:15px;
+padding:10px;
+border-radius:10px;
 background:rgba(255,255,255,0.1);
-min-height:60px;
-transition:0.5s;
+min-height:50px;
 }
 
-#timer{
-font-size:22px;
+#chatBox{
+height:120px;
+overflow-y:auto;
+background:rgba(255,255,255,0.05);
+padding:10px;
+border-radius:10px;
+text-align:left;
+font-size:14px;
 margin-top:10px;
 }
 </style>
@@ -89,7 +93,7 @@ margin-top:10px;
 
 <div class="container">
 
-<h2>🔥 Verdad o Reto Online 🔥</h2>
+<h2>🔥 Verdad o Reto 🔥</h2>
 
 <input id="name" placeholder="Tu nombre"><br>
 <input id="code" placeholder="Código de sala"><br>
@@ -100,13 +104,22 @@ margin-top:10px;
 <div id="roomInfo"></div>
 
 <div id="game" style="display:none;">
+
 <h3 id="turn"></h3>
 
 <button class="green">VERDAD</button>
 <button class="red">RETO</button>
 
 <div id="challengeBox"></div>
+
 <div>⏳ <span id="timer">20</span></div>
+
+<hr>
+
+<div id="chatBox"></div>
+
+<input id="chatInput" placeholder="Escribe mensaje..." style="width:65%;">
+<button onclick="sendMessage()">Enviar</button>
 
 </div>
 
