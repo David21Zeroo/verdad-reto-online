@@ -4,50 +4,103 @@
   <title>Verdad o Reto</title>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script defer src="app.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     body {
       margin:0;
-      font-family: Arial;
-      background: linear-gradient(135deg,#1e1b4b,#000,#312e81);
-      color:white;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg,#0f0c29,#302b63,#24243e);
       display:flex;
       justify-content:center;
       align-items:center;
       height:100vh;
+      color:white;
     }
+
     .card{
-      background: rgba(255,255,255,0.1);
-      padding:30px;
-      border-radius:20px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      padding:40px;
+      border-radius:25px;
+      width:320px;
       text-align:center;
-      width:300px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
     }
+
+    h1{
+      font-weight:800;
+      margin-bottom:20px;
+      background: linear-gradient(90deg,#00f5ff,#ff00c8);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    input{
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:10px;
+      margin-bottom:10px;
+      outline:none;
+    }
+
     button{
       padding:10px 20px;
       margin:5px;
       border:none;
-      border-radius:10px;
-      font-size:16px;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.3s;
     }
-    .green{background:#22c55e;color:white;}
-    .red{background:#ef4444;color:white;}
+
+    .primary{
+      background:#6366f1;
+      color:white;
+    }
+
+    .green{
+      background:#22c55e;
+      color:white;
+      box-shadow:0 0 15px #22c55e;
+    }
+
+    .red{
+      background:#ef4444;
+      color:white;
+      box-shadow:0 0 15px #ef4444;
+    }
+
+    button:hover{
+      transform:scale(1.05);
+    }
+
+    .turn{
+      margin:15px 0;
+      font-weight:600;
+      color:#00f5ff;
+    }
   </style>
 </head>
+
 <body>
   <div class="card">
-    <h2>Verdad o Reto</h2>
-    <input id="name" placeholder="Tu nombre" /><br><br>
-    <button onclick="createRoom()">Crear Sala</button>
-    <br><br>
-    <input id="code" placeholder="Código" />
-    <button onclick="joinRoom()">Unirse</button>
-    <h3 id="roomInfo"></h3>
+    <h1>Verdad o Reto</h1>
+
+    <input id="name" placeholder="Tu nombre" />
+
+    <button class="primary" onclick="createRoom()">Crear Sala</button>
+
+    <input id="code" placeholder="Código de sala" />
+    <button class="primary" onclick="joinRoom()">Unirse</button>
+
+    <div id="roomInfo"></div>
+
     <div id="game" style="display:none;">
-      <h3 id="turn"></h3>
+      <div class="turn" id="turn"></div>
       <button class="green">VERDAD</button>
       <button class="red">RETO</button>
     </div>
   </div>
 </body>
 </html>
-
