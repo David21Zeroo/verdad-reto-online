@@ -1,4 +1,4 @@
-const socket = io("https://TU-URL-RENDER.onrender.com"); // 👈 CAMBIA ESTO
+const socket = io("https://verdad-reto-online-3.onrender.com"); // 👈 CAMBIA ESTO
 
 let currentRoom = "";
 let playerName = "";
