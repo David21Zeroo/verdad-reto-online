@@ -1,106 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Verdad o Reto</title>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script defer src="app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin:0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      color:white;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdad o Reto Online</title>
 
-    .card{
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(20px);
-      padding:40px;
-      border-radius:25px;
-      width:320px;
-      text-align:center;
-      box-shadow: 0 0 40px rgba(0,0,0,0.6);
-    }
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
-    h1{
-      font-weight:800;
-      margin-bottom:20px;
-      background: linear-gradient(90deg,#00f5ff,#ff00c8);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
+<style>
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#0f0f1a;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+text-align:center;
+overflow:hidden;
+}
 
-    input{
-      width:100%;
-      padding:10px;
-      border:none;
-      border-radius:10px;
-      margin-bottom:10px;
-      outline:none;
-    }
+body::before{
+content:"";
+position:fixed;
+width:200%;
+height:200%;
+background:
+radial-gradient(circle at 20% 20%,#ff00c8,transparent),
+radial-gradient(circle at 80% 80%,#00f5ff,transparent);
+animation: move 10s infinite alternate;
+z-index:-1;
+}
 
-    button{
-      padding:10px 20px;
-      margin:5px;
-      border:none;
-      border-radius:12px;
-      font-weight:600;
-      cursor:pointer;
-      transition:0.3s;
-    }
+@keyframes move{
+0%{transform:translate(-10%,-10%);}
+100%{transform:translate(10%,10%);}
+}
 
-    .primary{
-      background:#6366f1;
-      color:white;
-    }
+.container{
+background:rgba(255,255,255,0.05);
+padding:25px;
+border-radius:20px;
+width:90%;
+max-width:400px;
+backdrop-filter:blur(10px);
+}
 
-    .green{
-      background:#22c55e;
-      color:white;
-      box-shadow:0 0 15px #22c55e;
-    }
+button{
+padding:12px;
+margin:8px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+font-weight:bold;
+}
 
-    .red{
-      background:#ef4444;
-      color:white;
-      box-shadow:0 0 15px #ef4444;
-    }
+.green{background:#00c853;color:white;}
+.red{background:#d50000;color:white;}
+.blue{background:#2979ff;color:white;}
 
-    button:hover{
-      transform:scale(1.05);
-    }
+input{
+padding:10px;
+margin:5px;
+border-radius:8px;
+border:none;
+width:80%;
+}
 
-    .turn{
-      margin:15px 0;
-      font-weight:600;
-      color:#00f5ff;
-    }
-  </style>
+#challengeBox{
+margin-top:20px;
+padding:15px;
+border-radius:15px;
+background:rgba(255,255,255,0.1);
+min-height:60px;
+transition:0.5s;
+}
+
+#timer{
+font-size:22px;
+margin-top:10px;
+}
+</style>
 </head>
 
 <body>
-  <div class="card">
-    <h1>Verdad o Reto</h1>
 
-    <input id="name" placeholder="Tu nombre" />
+<div class="container">
 
-    <button class="primary" onclick="createRoom()">Crear Sala</button>
+<h2>🔥 Verdad o Reto Online 🔥</h2>
 
-    <input id="code" placeholder="Código de sala" />
-    <button class="primary" onclick="joinRoom()">Unirse</button>
+<input id="name" placeholder="Tu nombre"><br>
+<input id="code" placeholder="Código de sala"><br>
 
-    <div id="roomInfo"></div>
+<button class="blue" onclick="createRoom()">Crear Sala</button>
+<button class="blue" onclick="joinRoom()">Unirse</button>
 
-    <div id="game" style="display:none;">
-      <div class="turn" id="turn"></div>
-      <button class="green">VERDAD</button>
-      <button class="red">RETO</button>
-    </div>
-  </div>
+<div id="roomInfo"></div>
+
+<div id="game" style="display:none;">
+<h3 id="turn"></h3>
+
+<button class="green">VERDAD</button>
+<button class="red">RETO</button>
+
+<div id="challengeBox"></div>
+<div>⏳ <span id="timer">20</span></div>
+
+</div>
+
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>
