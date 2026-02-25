@@ -1,46 +1,43 @@
-const socket = io("https://verdad-reto-online-1.onrender.com"); // 👈 CAMBIA POR TU URL REAL
+const socket = io("https://TU-URL-RENDER.onrender.com"); // 👈 CAMBIA ESTO
 
 let currentRoom = "";
+let playerName = "";
 let timerInterval = null;
 
 const truths = [
 "¿Cuál ha sido tu mayor vergüenza?",
 "¿Te gusta alguien en secreto?",
-"¿Cuál es tu miedo más grande?",
-"¿Has mentido hoy?",
-"¿Qué es lo más loco que has hecho?"
+"¿Cuál es tu miedo más grande?"
 ];
 
 const dares = [
 "Haz 10 flexiones",
-"Canta una canción por 15 segundos",
-"Habla con voz de bebé por 1 minuto",
-"Baila sin música por 20 segundos",
-"Envía un emoji extraño a alguien"
+"Canta una canción 15 segundos",
+"Baila sin música 20 segundos"
 ];
 
 function randomItem(arr){
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(Math.random()*arr.length)];
 }
 
 function createRoom(){
-  const name = document.getElementById("name").value;
-  if(!name) return alert("Escribe tu nombre");
+  playerName = document.getElementById("name").value;
+  if(!playerName) return alert("Escribe tu nombre");
 
-  socket.emit("createRoom",{name},(code)=>{
+  socket.emit("createRoom",{name:playerName},(code)=>{
     currentRoom = code;
-    document.getElementById("roomInfo").innerHTML = "Código: <b>"+code+"</b>";
+    document.getElementById("roomInfo").innerHTML="Código: <b>"+code+"</b>";
     document.getElementById("game").style.display="block";
   });
 }
 
 function joinRoom(){
   const code = document.getElementById("code").value;
-  const name = document.getElementById("name").value;
+  playerName = document.getElementById("name").value;
 
-  if(!code || !name) return alert("Completa los datos");
+  if(!code || !playerName) return alert("Completa los datos");
 
-  socket.emit("joinRoom",{code,name},(res)=>{
+  socket.emit("joinRoom",{code,name:playerName},(res)=>{
     if(res==="OK"){
       currentRoom = code;
       document.getElementById("game").style.display="block";
@@ -58,10 +55,7 @@ socket.on("updateRoom",(room)=>{
 });
 
 function showChallenge(text){
-  const box = document.getElementById("challengeBox");
-  box.innerText = text;
-  box.style.opacity = "0";
-  setTimeout(()=>{ box.style.opacity = "1"; },100);
+  document.getElementById("challengeBox").innerText = text;
   startTimer();
 }
 
@@ -76,21 +70,47 @@ function startTimer(){
     time--;
     timer.innerText = time;
 
-    if(time <= 0){
+    if(time<=0){
       clearInterval(timerInterval);
-      socket.emit("nextTurn", currentRoom);
+      socket.emit("nextTurn",currentRoom);
     }
   },1000);
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
 
-  document.querySelector(".green").addEventListener("click",()=>{
-    showChallenge("VERDAD: " + randomItem(truths));
+  document.querySelector(".green").onclick=()=>{
+    showChallenge("VERDAD: "+randomItem(truths));
+  };
+
+  document.querySelector(".red").onclick=()=>{
+    showChallenge("RETO: "+randomItem(dares));
+  };
+
+});
+
+// CHAT
+function sendMessage(){
+  const input = document.getElementById("chatInput");
+  const message = input.value;
+
+  if(!message) return;
+
+  socket.emit("sendMessage",{
+    code: currentRoom,
+    name: playerName,
+    message
   });
 
-  document.querySelector(".red").addEventListener("click",()=>{
-    showChallenge("RETO: " + randomItem(dares));
-  });
+  input.value="";
+}
 
+socket.on("receiveMessage",(data)=>{
+  const chat = document.getElementById("chatBox");
+
+  const msg = document.createElement("div");
+  msg.innerHTML = "<b>"+data.name+":</b> "+data.message;
+
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
 });
