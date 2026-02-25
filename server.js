@@ -25,7 +25,8 @@ io.on("connection", (socket) => {
 
     rooms[code] = {
       players: [{ id: socket.id, name }],
-      turn: 0
+      turn: 0,
+      challenge: ""
     };
 
     socket.join(code);
@@ -43,23 +44,26 @@ io.on("connection", (socket) => {
     callback("OK");
   });
 
+  socket.on("sendChallenge", ({ code, challenge }) => {
+    if (!rooms[code]) return;
+
+    rooms[code].challenge = challenge;
+    io.to(code).emit("updateRoom", rooms[code]);
+  });
+
   socket.on("nextTurn", (code) => {
     if (!rooms[code]) return;
 
     rooms[code].turn =
       (rooms[code].turn + 1) % rooms[code].players.length;
 
+    rooms[code].challenge = "";
     io.to(code).emit("updateRoom", rooms[code]);
   });
 
-  // 🔥 CHAT
   socket.on("sendMessage", ({ code, name, message }) => {
     if (!rooms[code]) return;
-
-    io.to(code).emit("receiveMessage", {
-      name,
-      message
-    });
+    io.to(code).emit("receiveMessage", { name, message });
   });
 
 });
