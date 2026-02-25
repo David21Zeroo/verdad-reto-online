@@ -21,7 +21,6 @@ function generateCode() {
 io.on("connection", (socket) => {
 
   socket.on("createRoom", ({ name }, callback) => {
-
     const code = generateCode();
 
     rooms[code] = {
@@ -35,7 +34,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("joinRoom", ({ code, name }, callback) => {
-
     if (!rooms[code]) return callback("Sala no existe");
 
     rooms[code].players.push({ id: socket.id, name });
@@ -46,13 +44,22 @@ io.on("connection", (socket) => {
   });
 
   socket.on("nextTurn", (code) => {
-
     if (!rooms[code]) return;
 
     rooms[code].turn =
       (rooms[code].turn + 1) % rooms[code].players.length;
 
     io.to(code).emit("updateRoom", rooms[code]);
+  });
+
+  // 🔥 CHAT
+  socket.on("sendMessage", ({ code, name, message }) => {
+    if (!rooms[code]) return;
+
+    io.to(code).emit("receiveMessage", {
+      name,
+      message
+    });
   });
 
 });
