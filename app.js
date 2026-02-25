@@ -1,8 +1,7 @@
-const socket = io("https://verdad-reto-online-3.onrender.com"); // 👈 CAMBIA ESTO
+const socket = io("https://verdad-reto-online-4.onrender.com");
 
 let currentRoom = "";
 let playerName = "";
-let timerInterval = null;
 
 const truths = [
 "¿Cuál ha sido tu mayor vergüenza?",
@@ -48,48 +47,27 @@ function joinRoom(){
 }
 
 socket.on("updateRoom",(room)=>{
-  if(room.players.length > 0){
-    document.getElementById("turn").innerText =
-      "Turno de: " + room.players[room.turn]?.name;
-  }
+  document.getElementById("turn").innerText =
+    "Turno de: " + room.players[room.turn]?.name;
+
+  document.getElementById("challengeBox").innerText =
+    room.challenge || "Esperando reto...";
 });
 
-function showChallenge(text){
-  document.getElementById("challengeBox").innerText = text;
-  startTimer();
+function sendTruth(){
+  const challenge = "VERDAD: " + randomItem(truths);
+  socket.emit("sendChallenge",{code:currentRoom, challenge});
 }
 
-function startTimer(){
-  let time = 20;
-  const timer = document.getElementById("timer");
-  timer.innerText = time;
-
-  if(timerInterval) clearInterval(timerInterval);
-
-  timerInterval = setInterval(()=>{
-    time--;
-    timer.innerText = time;
-
-    if(time<=0){
-      clearInterval(timerInterval);
-      socket.emit("nextTurn",currentRoom);
-    }
-  },1000);
+function sendDare(){
+  const challenge = "RETO: " + randomItem(dares);
+  socket.emit("sendChallenge",{code:currentRoom, challenge});
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
+function nextTurn(){
+  socket.emit("nextTurn", currentRoom);
+}
 
-  document.querySelector(".green").onclick=()=>{
-    showChallenge("VERDAD: "+randomItem(truths));
-  };
-
-  document.querySelector(".red").onclick=()=>{
-    showChallenge("RETO: "+randomItem(dares));
-  };
-
-});
-
-// CHAT
 function sendMessage(){
   const input = document.getElementById("chatInput");
   const message = input.value;
