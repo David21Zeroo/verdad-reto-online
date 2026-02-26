@@ -1,18 +1,18 @@
 const socket = io("https://verdad-reto-online-4.onrender.com");
 
 let currentRoom = "";
-let playerName = "";
+let playerNumber = 0;
 
 const truths = [
-"¿Cuál ha sido tu mayor vergüenza?",
-"¿Te gusta alguien en secreto?",
-"¿Cuál es tu miedo más grande?"
+"¿Cuál es tu secreto más grande?",
+"¿Te gusta alguien aquí?",
+"¿Cuál fue tu peor cita?"
 ];
 
 const dares = [
-"Haz 10 flexiones",
-"Canta una canción 15 segundos",
-"Baila sin música 20 segundos"
+"Envía un audio cantando.",
+"Habla con voz graciosa por 1 minuto.",
+"Cuenta un chiste malo."
 ];
 
 function randomItem(arr){
@@ -20,39 +20,16 @@ function randomItem(arr){
 }
 
 function createRoom(){
-  playerName = document.getElementById("name").value;
-  if(!playerName) return alert("Escribe tu nombre");
-
-  socket.emit("createRoom",{name:playerName},(code)=>{
-    currentRoom = code;
-    document.getElementById("roomInfo").innerHTML="Código: <b>"+code+"</b>";
-    document.getElementById("game").style.display="block";
-  });
+  const code = document.getElementById("roomInput").value;
+  if(!code) return alert("Escribe un código");
+  socket.emit("createRoom", code);
 }
 
 function joinRoom(){
-  const code = document.getElementById("code").value;
-  playerName = document.getElementById("name").value;
-
-  if(!code || !playerName) return alert("Completa los datos");
-
-  socket.emit("joinRoom",{code,name:playerName},(res)=>{
-    if(res==="OK"){
-      currentRoom = code;
-      document.getElementById("game").style.display="block";
-    }else{
-      alert(res);
-    }
-  });
+  const code = document.getElementById("roomInput").value;
+  if(!code) return alert("Escribe un código");
+  socket.emit("joinRoom", code);
 }
-
-socket.on("updateRoom",(room)=>{
-  document.getElementById("turn").innerText =
-    "Turno de: " + room.players[room.turn]?.name;
-
-  document.getElementById("challengeBox").innerText =
-    room.challenge || "Esperando reto...";
-});
 
 function sendTruth(){
   const challenge = "VERDAD: " + randomItem(truths);
@@ -68,27 +45,29 @@ function nextTurn(){
   socket.emit("nextTurn", currentRoom);
 }
 
-function sendMessage(){
-  const input = document.getElementById("chatInput");
-  const message = input.value;
-
-  if(!message) return;
-
-  socket.emit("sendMessage",{
-    code: currentRoom,
-    name: playerName,
-    message
-  });
-
-  input.value="";
-}
-
-socket.on("receiveMessage",(data)=>{
-  const chat = document.getElementById("chatBox");
-
-  const msg = document.createElement("div");
-  msg.innerHTML = "<b>"+data.name+":</b> "+data.message;
-
-  chat.appendChild(msg);
-  chat.scrollTop = chat.scrollHeight;
+socket.on("roomCreated",(code)=>{
+  currentRoom = code;
+  playerNumber = 1;
+  startGame(code);
 });
+
+socket.on("roomJoined",(code)=>{
+  currentRoom = code;
+  playerNumber = 2;
+  startGame(code);
+});
+
+socket.on("updateTurn",(turn)=>{
+  document.getElementById("turnText").innerText =
+    turn === playerNumber ? "Es tu turno" : "Turno del jugador " + turn;
+});
+
+socket.on("receiveChallenge",(challenge)=>{
+  document.getElementById("challengeText").innerText = challenge;
+});
+
+function startGame(code){
+  document.getElementById("home").style.display="none";
+  document.getElementById("gameArea").style.display="block";
+  document.getElementById("roomTitle").innerText="Sala: "+code;
+}
